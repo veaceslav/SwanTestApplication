@@ -5,7 +5,7 @@ package com.example.slavik.swantestapplication;
  */
 public class SwanExpressionsForTest {
 
-    public String phone_expr[] = {
+    public static String phone_expr[] = {
             "self@wear_accelerometer:x?delay=10$server_storage=FALSE{ANY,0}",
             "self@wear_accelerometer:x?delay=100$server_storage=FALSE{ANY,0}",
             "self@wear_accelerometer:x?delay=1000$server_storage=FALSE{ANY,0}",
@@ -24,7 +24,7 @@ public class SwanExpressionsForTest {
 
     };
 
-    public String wear_expr[] = {
+    public static String wear_expr[] = {
             "wear@accelerometer:x?delay=10$server_storage=FALSE{ANY,0}",
             "wear@accelerometer:x?delay=100$server_storage=FALSE{ANY,0}",
             "wear@accelerometer:x?delay=1000$server_storage=FALSE{ANY,0}",
