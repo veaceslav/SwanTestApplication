@@ -3,8 +3,8 @@ package com.example.slavik.swantestapplication;
 import android.content.Context;
 import android.util.Log;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 
 import interdroid.swancore.swanmain.ExpressionManager;
 import interdroid.swancore.swanmain.SwanException;
@@ -19,11 +19,13 @@ import interdroid.swancore.swansong.ValueExpression;
  */
 public class BatteryStats {
 
-    volatile Object result;
+    volatile Object resultPhone;
+    volatile Object resultWear;
 
     Context mContext;
 
-    String REQUEST_CODE = "1122";
+    String REQUEST_CODE_PHONE = "1111";
+    String REQUEST_CODE_WEAR  = "2222";
 
     public BatteryStats(Context context){
         this.mContext = context;
@@ -31,22 +33,27 @@ public class BatteryStats {
 
     Object batteryRemainingPhone(){
 
-        String myExpression = "self@battery:level?delay=0$server_storage=FALSE{ANY,0}";
+        String myExpression = "self@battery:level{ANY,0}";
 
-        return getSingleValueFromExpression(myExpression);
+        return getSingleValueFromExpression(myExpression, REQUEST_CODE_PHONE);
     }
 
     Object batteryRemainingWear(){
-        String myExpression = "wear@battery:level?delay=0$server_storage=FALSE{ANY,0}";
+        String myExpression = "wear@battery:level{ANY,0}";
 
-        return getSingleValueFromExpression(myExpression);
+        return getSingleValueFromExpression(myExpression, REQUEST_CODE_WEAR);
     }
 
-    Object getSingleValueFromExpression(String expression){
+    public synchronized Object getSingleValueFromExpression(String expression, final String code){
 
-        result = null;
+        final CountDownLatch latch = new CountDownLatch(1);
+        if(code.equals(REQUEST_CODE_PHONE))
+            resultPhone = null;
+        else
+            resultWear = null;
+
         try {
-            ExpressionManager.registerValueExpression(mContext, REQUEST_CODE,
+            ExpressionManager.registerValueExpression(mContext, code,
                     (ValueExpression) ExpressionFactory.parse(expression),
                     new ValueExpressionListener() {
                         /* Registering a listener to process new values from the registered sensor*/
@@ -54,11 +61,17 @@ public class BatteryStats {
                         public void onNewValues(String id,
                                                 TimestampedValue[] arg1) {
                             if (arg1 != null && arg1.length > 0) {
-                                Log.d("BAttery", "Got result");
-                                result = arg1[0].getValue();
-                                ExpressionManager.unregisterExpression(mContext, REQUEST_CODE);
+                                if(latch.getCount() != 0) {
+                                    ExpressionManager.unregisterExpression(mContext, code);
+                                    Log.d("BAttery", "Got result");
+                                    if(code.equals(REQUEST_CODE_PHONE))
+                                        resultPhone = arg1[0].getValue();
+                                    else
+                                        resultWear = arg1[0].getValue();
+                                    latch.countDown();
+                                }
+
                             }
-                            Log.d("BAtt", "Got null");
                         }
                     });
         } catch (SwanException e) {
@@ -69,14 +82,16 @@ public class BatteryStats {
             e.printStackTrace();
         }
 
-        while(result == null){
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
-        return new Integer(1);
+
+        if(code.equals(REQUEST_CODE_PHONE))
+            return resultPhone;
+        else
+            return resultWear;
     }
 }

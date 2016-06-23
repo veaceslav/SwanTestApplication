@@ -8,6 +8,9 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 
 import interdroid.swancore.swanmain.ExpressionManager;
@@ -64,8 +67,16 @@ public class TestingService extends Service {
 
     void runTests(){
 
-        runPhoneExpressions();
-        runWearExpressions();
+        ExecutorService executorService = Executors.newCachedThreadPool();
+
+        executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                runPhoneExpressions();
+                runWearExpressions();
+            }
+        });
+
     }
 
     private void runPhoneExpressions() {
@@ -84,7 +95,6 @@ public class TestingService extends Service {
         int levelPhone = (int)batteryStats.batteryRemainingPhone();
         int levelWear  = (int)batteryStats.batteryRemainingWear();
         Log.d(TAG, "Starting expression");
-        //registerSWANSensor(expr, 1000);
 
 
         int levelAfterPhone = (int)batteryStats.batteryRemainingPhone();
