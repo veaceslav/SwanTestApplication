@@ -6,17 +6,17 @@ package com.example.slavik.swantestapplication;
 public class SwanExpressionsForTest {
 
     public static String phone_expr[] = {
-            "self@wear_accelerometer:x?delay=10$server_storage=FALSE{ANY,0}",
-            "self@wear_accelerometer:x?delay=100$server_storage=FALSE{ANY,0}",
-            "self@wear_accelerometer:x?delay=1000$server_storage=FALSE{ANY,0}",
+            "self@wear_movement:x?delay=10$server_storage=FALSE{ANY,0}",
+            "self@wear_movement:x?delay=100$server_storage=FALSE{ANY,0}",
+            "self@wear_movement:x?delay=1000$server_storage=FALSE{ANY,0}",
 
             "self@wear_heartrate:heart_rate?delay=10$server_storage=FALSE{ANY,0}",
             "self@wear_heartrate:heart_rate?delay=100$server_storage=FALSE{ANY,0}",
             "self@wear_heartrate:heart_rate?delay=1000$server_storage=FALSE{ANY,0}",
 
-            "self@wear_accelerometer:x?delay=10$server_storage=FALSE{ANY,10}",
-            "self@wear_accelerometer:x?delay=100$server_storage=FALSE{ANY,10}",
-            "self@wear_accelerometer:x?delay=1000$server_storage=FALSE{ANY,10}",
+            "self@wear_movement:x?delay=10$server_storage=FALSE{ANY,10}",
+            "self@wear_movement:x?delay=100$server_storage=FALSE{ANY,10}",
+            "self@wear_movement:x?delay=1000$server_storage=FALSE{ANY,10}",
 
             "self@wear_heartrate:heart_rate?delay=10$server_storage=FALSE{ANY,10}",
             "self@wear_heartrate:heart_rate?delay=100$server_storage=FALSE{ANY,10}",

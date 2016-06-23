@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -80,9 +81,11 @@ public class TestingService extends Service {
     }
 
     private void runPhoneExpressions() {
-        for(String expr : SwanExpressionsForTest.phone_expr){
-            runExpression(expr);
-        }
+
+        runExpression(SwanExpressionsForTest.phone_expr[0]);
+//        for(String expr : SwanExpressionsForTest.phone_expr){
+//            runExpression(expr);
+//        }
     }
 
     private void runWearExpressions() {
@@ -96,6 +99,7 @@ public class TestingService extends Service {
         int levelWear  = (int)batteryStats.batteryRemainingWear();
         Log.d(TAG, "Starting expression");
 
+        registerSWANSensor(expr, valueCount);
 
         int levelAfterPhone = (int)batteryStats.batteryRemainingPhone();
         int levelAfterWear  = (int)batteryStats.batteryRemainingWear();
@@ -105,7 +109,7 @@ public class TestingService extends Service {
     }
     private void registerSWANSensor(String myExpression, final int valueCount){
 
-        unlocked = false;
+        final CountDownLatch latch = new CountDownLatch(1);
         try {
             ExpressionManager.registerValueExpression(this, REQUEST_CODE,
                     (ValueExpression) ExpressionFactory.parse(myExpression),
@@ -119,8 +123,9 @@ public class TestingService extends Service {
                             if (arg1 != null && arg1.length > 0) {
                                 String value = arg1[0].getValue().toString();
                                 currentCount++;
-                                if(currentCount > valueCount){
-                                    unlocked = true;
+                                Log.d(TAG, "Value Count " + currentCount);
+                                if(currentCount == valueCount){
+                                    latch.countDown();
                                     ExpressionManager.unregisterExpression(getApplicationContext(), REQUEST_CODE);
                                 }
                             }
@@ -134,13 +139,12 @@ public class TestingService extends Service {
             e.printStackTrace();
         }
 
-        while(!unlocked){
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+
 
     }
 

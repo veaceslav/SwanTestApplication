@@ -61,7 +61,7 @@ public class BatteryStats {
 
         final CountDownLatch latch = new CountDownLatch(1);
         final MyMutable<Object> value = new MyMutable<>();
-        
+
         try {
             ExpressionManager.registerValueExpression(mContext, code,
                     (ValueExpression) ExpressionFactory.parse(expression),
