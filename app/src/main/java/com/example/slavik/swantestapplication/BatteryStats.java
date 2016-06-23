@@ -17,6 +17,19 @@ import interdroid.swancore.swansong.ValueExpression;
 /**
  * Created by slavik on 6/22/16.
  */
+
+class MyMutable<T>{
+    T value;
+
+    void setValue(T value){
+        this.value = value;
+    }
+
+    T getValue(){
+        return this.value;
+    }
+}
+
 public class BatteryStats {
 
     volatile Object resultPhone;
@@ -47,11 +60,8 @@ public class BatteryStats {
     public synchronized Object getSingleValueFromExpression(String expression, final String code){
 
         final CountDownLatch latch = new CountDownLatch(1);
-        if(code.equals(REQUEST_CODE_PHONE))
-            resultPhone = null;
-        else
-            resultWear = null;
-
+        final MyMutable<Object> value = new MyMutable<>();
+        
         try {
             ExpressionManager.registerValueExpression(mContext, code,
                     (ValueExpression) ExpressionFactory.parse(expression),
@@ -64,10 +74,7 @@ public class BatteryStats {
                                 if(latch.getCount() != 0) {
                                     ExpressionManager.unregisterExpression(mContext, code);
                                     Log.d("BAttery", "Got result");
-                                    if(code.equals(REQUEST_CODE_PHONE))
-                                        resultPhone = arg1[0].getValue();
-                                    else
-                                        resultWear = arg1[0].getValue();
+                                    value.setValue(arg1[0].getValue());
                                     latch.countDown();
                                 }
 
@@ -88,10 +95,7 @@ public class BatteryStats {
             e.printStackTrace();
         }
 
+        return value.getValue();
 
-        if(code.equals(REQUEST_CODE_PHONE))
-            return resultPhone;
-        else
-            return resultWear;
     }
 }
