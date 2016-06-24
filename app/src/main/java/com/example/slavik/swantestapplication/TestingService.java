@@ -3,6 +3,7 @@ package com.example.slavik.swantestapplication;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -39,6 +40,8 @@ public class TestingService extends Service {
 
     String REQUEST_CODE = "1234";
 
+    Context mContext;
+
 
     @Nullable
     @Override
@@ -52,7 +55,7 @@ public class TestingService extends Service {
     public void onCreate() {
         super.onCreate();
 
-
+        ExecutorService executorService = Executors.newCachedThreadPool();
 
         notificationBuilder = new Notification.Builder(this);
         notificationBuilder.setContentTitle("Swan Test ");
@@ -63,6 +66,8 @@ public class TestingService extends Service {
         startForeground(1, notificationBuilder.build());
 
         runTests();
+
+        mContext = getApplicationContext();
 
     }
 
@@ -83,6 +88,8 @@ public class TestingService extends Service {
     private void runPhoneExpressions() {
 
         runExpression(SwanExpressionsForTest.phone_expr[0]);
+        runExpression(SwanExpressionsForTest.phone_expr[1]);
+        runExpression(SwanExpressionsForTest.phone_expr[0]);
 //        for(String expr : SwanExpressionsForTest.phone_expr){
 //            runExpression(expr);
 //        }
@@ -93,7 +100,7 @@ public class TestingService extends Service {
     }
 
     private void runExpression(String expr){
-        int valueCount = 1000;
+        int valueCount = 200;
 
         int levelPhone = (int)batteryStats.batteryRemainingPhone();
         int levelWear  = (int)batteryStats.batteryRemainingWear();
@@ -111,11 +118,12 @@ public class TestingService extends Service {
 
         final CountDownLatch latch = new CountDownLatch(1);
         try {
-            ExpressionManager.registerValueExpression(this, REQUEST_CODE,
+            ExpressionManager.registerValueExpression(mContext, REQUEST_CODE,
                     (ValueExpression) ExpressionFactory.parse(myExpression),
                     new ValueExpressionListener() {
 
-                        int currentCount = 0;
+                        volatile int currentCount = 0;
+                        volatile boolean registered =true;
                         /* Registering a listener to process new values from the registered sensor*/
                         @Override
                         public void onNewValues(String id,
@@ -126,7 +134,8 @@ public class TestingService extends Service {
                                 Log.d(TAG, "Value Count " + currentCount);
                                 if(currentCount == valueCount){
                                     latch.countDown();
-                                    ExpressionManager.unregisterExpression(getApplicationContext(), REQUEST_CODE);
+                                    Log.d(TAG, "Calling unregister");
+                                    ExpressionManager.unregisterExpression(mContext, REQUEST_CODE);
                                 }
                             }
                         }
