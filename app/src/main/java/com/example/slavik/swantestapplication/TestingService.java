@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -80,6 +81,7 @@ public class TestingService extends Service {
             public void run() {
                 runPhoneExpressions();
                 runWearExpressions();
+                Log.d(TAG, "Tests completed");
             }
         });
 
@@ -89,36 +91,71 @@ public class TestingService extends Service {
 
         runExpression(SwanExpressionsForTest.phone_expr[0]);
         runExpression(SwanExpressionsForTest.phone_expr[1]);
-        runExpression(SwanExpressionsForTest.phone_expr[0]);
+
+
 //        for(String expr : SwanExpressionsForTest.phone_expr){
 //            runExpression(expr);
 //        }
     }
 
     private void runWearExpressions() {
-
+        runExpression(SwanExpressionsForTest.wear_expr[0]);
     }
 
     private void runExpression(String expr){
         int valueCount = 200;
 
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         int levelPhone = (int)batteryStats.batteryRemainingPhone();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         int levelWear  = (int)batteryStats.batteryRemainingWear();
         Log.d(TAG, "Starting expression");
 
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         registerSWANSensor(expr, valueCount);
 
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         int levelAfterPhone = (int)batteryStats.batteryRemainingPhone();
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         int levelAfterWear  = (int)batteryStats.batteryRemainingWear();
 
         Log.d(TAG, "Results of 1000 runs:" + levelPhone +" " + levelWear + " after: " + levelAfterPhone + " " + levelAfterWear );
+
+
 
     }
     private void registerSWANSensor(String myExpression, final int valueCount){
 
         final CountDownLatch latch = new CountDownLatch(1);
+        final String id = RandomId.getRandomId();
         try {
-            ExpressionManager.registerValueExpression(mContext, REQUEST_CODE,
+            ExpressionManager.registerValueExpression(mContext, id,
                     (ValueExpression) ExpressionFactory.parse(myExpression),
                     new ValueExpressionListener() {
 
@@ -135,7 +172,7 @@ public class TestingService extends Service {
                                 if(currentCount == valueCount){
                                     latch.countDown();
                                     Log.d(TAG, "Calling unregister");
-                                    ExpressionManager.unregisterExpression(mContext, REQUEST_CODE);
+                                    ExpressionManager.unregisterExpression(mContext, id);
                                 }
                             }
                         }

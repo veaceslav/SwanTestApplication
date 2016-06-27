@@ -25,17 +25,17 @@ public class SwanExpressionsForTest {
     };
 
     public static String wear_expr[] = {
-            "wear@accelerometer:x?delay=10$server_storage=FALSE{ANY,0}",
-            "wear@accelerometer:x?delay=100$server_storage=FALSE{ANY,0}",
-            "wear@accelerometer:x?delay=1000$server_storage=FALSE{ANY,0}",
+            "wear@movement:x?delay=10$server_storage=FALSE{ANY,0}",
+            "wear@movement:x?delay=100$server_storage=FALSE{ANY,0}",
+            "wear@movement:x?delay=1000$server_storage=FALSE{ANY,0}",
 
             "wear@heartrate:heart_rate?delay=10$server_storage=FALSE{ANY,0}",
             "wear@heartrate:heart_rate?delay=100$server_storage=FALSE{ANY,0}",
             "wear@heartrate:heart_rate?delay=1000$server_storage=FALSE{ANY,0}",
 
-            "wear@accelerometer:x?delay=10$server_storage=FALSE{ANY,10}",
-            "wear@accelerometer:x?delay=100$server_storage=FALSE{ANY,10}",
-            "wear@accelerometer:x?delay=1000$server_storage=FALSE{ANY,10}",
+            "wear@movement:x?delay=10$server_storage=FALSE{ANY,10}",
+            "wear@movement:x?delay=100$server_storage=FALSE{ANY,10}",
+            "wear@movement:x?delay=1000$server_storage=FALSE{ANY,10}",
 
             "wear@heartrate:heart_rate?delay=10$server_storage=FALSE{ANY,10}",
             "wear@heartrate:heart_rate?delay=100$server_storage=FALSE{ANY,10}",

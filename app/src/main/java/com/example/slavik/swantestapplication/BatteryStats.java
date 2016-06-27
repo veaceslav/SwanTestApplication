@@ -48,13 +48,13 @@ public class BatteryStats {
 
         String myExpression = "self@battery:level{ANY,0}";
 
-        return getSingleValueFromExpression(myExpression, REQUEST_CODE_PHONE);
+        return getSingleValueFromExpression(myExpression, RandomId.getRandomId());
     }
 
     Object batteryRemainingWear(){
         String myExpression = "wear@battery:level{ANY,0}";
 
-        return getSingleValueFromExpression(myExpression, REQUEST_CODE_WEAR);
+        return getSingleValueFromExpression(myExpression, RandomId.getRandomId());
     }
 
     public synchronized Object getSingleValueFromExpression(String expression, final String code){
