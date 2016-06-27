@@ -72,6 +72,11 @@ public class TestingService extends Service {
 
     }
 
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+    }
+
     void runTests(){
 
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -79,8 +84,10 @@ public class TestingService extends Service {
         executorService.submit(new Runnable() {
             @Override
             public void run() {
+                OutputData.getInstance(mContext).openStream();
                 runPhoneExpressions();
                 runWearExpressions();
+                OutputData.getInstance(mContext).closeStream();
                 Log.d(TAG, "Tests completed");
             }
         });
@@ -127,7 +134,10 @@ public class TestingService extends Service {
             e.printStackTrace();
         }
 
+        long startTime = System.currentTimeMillis();
         registerSWANSensor(expr, valueCount);
+
+        long stopTime = System.currentTimeMillis();
 
         try {
             Thread.sleep(500);
@@ -147,7 +157,9 @@ public class TestingService extends Service {
 
         Log.d(TAG, "Results of 1000 runs:" + levelPhone +" " + levelWear + " after: " + levelAfterPhone + " " + levelAfterWear );
 
-
+        OutputData.getInstance(mContext).addToResult(expr + "," +String.valueOf(valueCount) + "," + levelPhone +","
+                + levelWear + "," + levelAfterPhone + "," + levelAfterWear+
+                "," + ((stopTime - startTime)/1000)+ "\n");
 
     }
     private void registerSWANSensor(String myExpression, final int valueCount){
