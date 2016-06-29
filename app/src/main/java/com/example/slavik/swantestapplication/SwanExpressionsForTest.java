@@ -20,7 +20,6 @@ public class SwanExpressionsForTest {
             "wear@gyroscope:x?delay={$delay}$server_storage=FALSE{ANY,0}",
             "wear@linearacceleration:x?delay={$delay}$server_storage=FALSE{ANY,0}",
             "wear@gravity:x?delay={$delay}$server_storage=FALSE{ANY,0}",
-            "wear@heartrate:heart_rate?delay={$delay}$server_storage=FALSE{ANY,0}",
-
+            "wear@heartrate:heart_rate?delay={$delay}$server_storage=FALSE{ANY,0}"
     };
 }

@@ -1,11 +1,14 @@
 package com.example.slavik.swantestapplication;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.nfc.Tag;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -29,6 +32,9 @@ import interdroid.swancore.swansong.ValueExpression;
  */
 public class TestingService extends Service {
 
+    int runtime = 1200;
+
+    int delay = 100;
     Notification.Builder notificationBuilder;
 
     BatteryStats batteryStats;
@@ -59,6 +65,7 @@ public class TestingService extends Service {
         ExecutorService executorService = Executors.newCachedThreadPool();
 
         notificationBuilder = new Notification.Builder(this);
+        notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
         notificationBuilder.setContentTitle("Swan Test ");
         notificationBuilder.setContentText("Running tests sensor data..");
 
@@ -85,10 +92,12 @@ public class TestingService extends Service {
             @Override
             public void run() {
                 OutputData.getInstance(mContext).openStream();
+                long before = System.currentTimeMillis();
                 runPhoneExpressions();
                 runWearExpressions();
+                long after = System.currentTimeMillis();
                 OutputData.getInstance(mContext).closeStream();
-                Log.d(TAG, "Tests completed");
+                Log.d(TAG, "Tests completed in " + ((after-before)/1000) + " seconds");
             }
         });
 
@@ -96,23 +105,34 @@ public class TestingService extends Service {
 
     private void runPhoneExpressions() {
 
-
-
+        int index = 0;
         for(String expr : SwanExpressionsForTest.phone_expr){
-            String newExpr = expr.replace("{$delay}", "10");
+            String newExpr = expr.replace("{$delay}", String.valueOf(delay));
+            updateNotification("Running phone expression :"+ index + " of " + SwanExpressionsForTest.phone_expr.length );
+            index++;
             runExpression(newExpr);
         }
     }
 
     private void runWearExpressions() {
+        Log.d(TAG, "Nr of expressions" + SwanExpressionsForTest.wear_expr.length);
+        int index = 0;
         for(String expr : SwanExpressionsForTest.wear_expr){
-            String newExpr = expr.replace("{$delay}", "10");
+            String newExpr = expr.replace("{$delay}", String.valueOf(delay));
+            //Log.d(TAG, "Running expr: " + newExpr);
+            updateNotification("Running wear expression :"+ index + " of " + SwanExpressionsForTest.phone_expr.length );
+            index++;
             runExpression(newExpr);
         }
     }
 
     private void runExpression(String expr){
-        int valueCount = 50;
+
+        int valueCount = runtime/delay;
+
+        if(expr.contains("heart")){
+            valueCount = runtime/1000; // for heartrate is 1 s
+        }
 
         try {
             Thread.sleep(500);
@@ -182,7 +202,7 @@ public class TestingService extends Service {
                             if (arg1 != null && arg1.length > 0) {
                                 String value = arg1[0].getValue().toString();
                                 currentCount++;
-                                Log.d(TAG, "Value Count " + currentCount);
+                                //Log.d(TAG, "Value Count " + currentCount);
                                 if(currentCount == valueCount){
                                     latch.countDown();
                                     Log.d(TAG, "Calling unregister");
@@ -208,4 +228,12 @@ public class TestingService extends Service {
 
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private void updateNotification(String msg){
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+
+        notificationBuilder.setContentText(msg);
+        mNotificationManager.notify(1, notificationBuilder.build());
+    }
 }
