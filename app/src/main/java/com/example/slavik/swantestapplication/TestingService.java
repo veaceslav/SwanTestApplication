@@ -98,6 +98,7 @@ public class TestingService extends Service {
                 long after = System.currentTimeMillis();
                 OutputData.getInstance(mContext).closeStream();
                 Log.d(TAG, "Tests completed in " + ((after-before)/1000) + " seconds");
+                updateNotification("Tests completed in " + ((after-before)/1000) + " seconds");
             }
         });
 
@@ -105,10 +106,10 @@ public class TestingService extends Service {
 
     private void runPhoneExpressions() {
 
-        int index = 0;
+        int index = 1;
         for(String expr : SwanExpressionsForTest.phone_expr){
             String newExpr = expr.replace("{$delay}", String.valueOf(delay));
-            updateNotification("Running phone expression :"+ index + " of " + SwanExpressionsForTest.phone_expr.length );
+            updateNotification("Running phone expression : "+ index + " of " + SwanExpressionsForTest.phone_expr.length );
             index++;
             runExpression(newExpr);
         }
@@ -116,11 +117,11 @@ public class TestingService extends Service {
 
     private void runWearExpressions() {
         Log.d(TAG, "Nr of expressions" + SwanExpressionsForTest.wear_expr.length);
-        int index = 0;
+        int index = 1;
         for(String expr : SwanExpressionsForTest.wear_expr){
             String newExpr = expr.replace("{$delay}", String.valueOf(delay));
             //Log.d(TAG, "Running expr: " + newExpr);
-            updateNotification("Running wear expression :"+ index + " of " + SwanExpressionsForTest.phone_expr.length );
+            updateNotification("Running wear expression : "+ index + " of " + SwanExpressionsForTest.wear_expr.length );
             index++;
             runExpression(newExpr);
         }
