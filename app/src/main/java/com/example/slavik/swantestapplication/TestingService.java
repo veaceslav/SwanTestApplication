@@ -96,21 +96,23 @@ public class TestingService extends Service {
 
     private void runPhoneExpressions() {
 
-        runExpression(SwanExpressionsForTest.phone_expr[0]);
-        runExpression(SwanExpressionsForTest.phone_expr[1]);
 
 
-//        for(String expr : SwanExpressionsForTest.phone_expr){
-//            runExpression(expr);
-//        }
+        for(String expr : SwanExpressionsForTest.phone_expr){
+            String newExpr = expr.replace("{$delay}", "10");
+            runExpression(newExpr);
+        }
     }
 
     private void runWearExpressions() {
-        runExpression(SwanExpressionsForTest.wear_expr[0]);
+        for(String expr : SwanExpressionsForTest.wear_expr){
+            String newExpr = expr.replace("{$delay}", "10");
+            runExpression(newExpr);
+        }
     }
 
     private void runExpression(String expr){
-        int valueCount = 200;
+        int valueCount = 50;
 
         try {
             Thread.sleep(500);
@@ -155,7 +157,7 @@ public class TestingService extends Service {
 
         int levelAfterWear  = (int)batteryStats.batteryRemainingWear();
 
-        Log.d(TAG, "Results of 1000 runs:" + levelPhone +" " + levelWear + " after: " + levelAfterPhone + " " + levelAfterWear );
+        Log.d(TAG, "Results of: "+ valueCount +" runs:" + levelPhone +" " + levelWear + " after: " + levelAfterPhone + " " + levelAfterWear );
 
         OutputData.getInstance(mContext).addToResult(expr + "," +String.valueOf(valueCount) + "," + levelPhone +","
                 + levelWear + "," + levelAfterPhone + "," + levelAfterWear+

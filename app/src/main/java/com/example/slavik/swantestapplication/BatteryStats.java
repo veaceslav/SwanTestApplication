@@ -32,16 +32,25 @@ class MyMutable<T>{
 
 public class BatteryStats {
 
-    volatile Object resultPhone;
-    volatile Object resultWear;
-
     Context mContext;
 
-    String REQUEST_CODE_PHONE = "1111";
-    String REQUEST_CODE_WEAR  = "2222";
 
     public BatteryStats(Context context){
         this.mContext = context;
+    }
+
+    Object energyRemainingPhone(){
+
+        String myExpression = "self@battery:level{ANY,0}";
+
+        return getSingleValueFromExpression(myExpression, RandomId.getRandomId());
+    }
+
+    Object energyRemainingWear(){
+
+        String myExpression = "self@battery:level{ANY,0}";
+
+        return getSingleValueFromExpression(myExpression, RandomId.getRandomId());
     }
 
     Object batteryRemainingPhone(){
